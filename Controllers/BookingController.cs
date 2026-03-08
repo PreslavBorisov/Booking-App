@@ -42,4 +42,33 @@ public class BookingController : ControllerBase
 
         return id;
     }
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Cancel(int id, CancellationToken ct)
+    {
+        await _bookings.CancleAsync(id, GetUserId(), isAdmin(), ct);
+        return NoContent();
+    }
+    private bool isAdmin()
+    {
+        return User.IsInRole("Admin");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("{id:int}/confirm")]
+    public async Task<IActionResult> Confirm(int id, CancellationToken ct)
+    {
+        await _bookings.ConfirmAsync(id, ct);
+        return NoContent();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    public async Task<ActionResult<List<AdminBookingResponse>>> GetAll(
+        [FromQuery] string? status,
+        CancellationToken ct)
+    {
+        var res = await _bookings.GetAllAsync(status, ct);
+        return Ok(res);   
+    }
+    
 }

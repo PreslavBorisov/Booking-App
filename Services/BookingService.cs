@@ -38,12 +38,66 @@ public class BookingService : IBookingService
 
         await _bookings.AddAsync(booking, ct);
 
-        return new BookingResponse(booking.Id, booking.RoomId, booking.UserId, booking.CheckIn, booking.CheckOut);
+        return new BookingResponse(booking.Id, booking.RoomId, booking.UserId, booking.CheckIn, booking.CheckOut, booking.Status.ToString());
     }
 
     public async Task<List<BookingResponse>> MyBookingsAsync(int userId, CancellationToken ct = default)
     {
         var list = await _bookings.GetForUserAsync(userId, ct);
-        return list.Select(b => new BookingResponse(b.Id, b.RoomId, b.UserId, b.CheckIn, b.CheckOut)).ToList();
+        return list.Select(b => new BookingResponse(b.Id, b.RoomId, b.UserId, b.CheckIn, b.CheckOut, b.Status.ToString())).ToList();
+    }
+
+    public async Task CancleAsync(int bookingId, int userId, bool isAdmin, CancellationToken ct = default)
+    {
+        Booking? booking = await _bookings.GetByIdAsync(bookingId,ct);
+        if (booking is null)
+        {
+            throw new ArgumentException("Booking not found.");
+        }
+        if(!isAdmin && booking.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You can cancel only your own bookings.");
+        }
+        if(booking.Status == BookingStatus.Cancelled)
+        {
+            throw new InvalidOperationException("Booking is already cancelled.");
+        }
+
+        booking.Status = BookingStatus.Cancelled;
+        await _bookings.DeleteAsync(booking, ct);
+    }
+
+    public async Task ConfirmAsync(int bookingId, CancellationToken ct = default)
+    {
+        Booking? booking = await _bookings.GetByIdAsync(bookingId,ct);
+        if(booking is null)
+        {
+            throw new ArgumentException("Booking not found.");
+        }
+        if(booking.Status == BookingStatus.Cancelled)
+        {
+            throw new InvalidOperationException("Cancelled booking cannot be confirmed.");
+        }
+        if(booking.Status == BookingStatus.Confirmed)
+        {
+            throw new InvalidOperationException("Booking is already confirmed.");
+        }
+        booking.Status = BookingStatus.Confirmed;
+        await _bookings.UpdateAsync(booking, ct);
+    }
+
+    public async Task<List<AdminBookingResponse>> GetAllAsync(string? status, CancellationToken ct = default)
+    {
+        var list = await _bookings.GetAllAsync(status, ct);
+
+        return list.Select(b => new AdminBookingResponse(
+            b.Id,
+            b.RoomId,
+            b.UserId,
+            b.User.Email,
+            b.CheckIn,
+            b.CheckOut,
+            b.Status.ToString()
+        )).ToList();
     }
 }

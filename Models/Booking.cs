@@ -14,4 +14,5 @@ public class Booking
     public DateOnly CheckOut { get; set; } // exclusive
 
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public BookingStatus Status {get; set;} = BookingStatus.Pending;
 }

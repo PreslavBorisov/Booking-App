@@ -36,6 +36,9 @@ public class AppDbContext : DbContext
             e.HasOne(b => b.Room).WithMany().HasForeignKey(b => b.RoomId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(b => b.User).WithMany().HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Restrict);
             e.HasIndex(b => new { b.RoomId, b.CheckIn, b.CheckOut });
+            e.Property(b => b.Status).HasConversion<string>()
+            .HasMaxLength(32)
+            .IsRequired();
         });
        
     }

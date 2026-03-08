@@ -56,7 +56,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;
+JwtOptions jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {
@@ -74,7 +74,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
+
+await DbSeeder.SeedAdminAsync(app.Services);
 
 app.UseGlobalExceptionHandling();
 
