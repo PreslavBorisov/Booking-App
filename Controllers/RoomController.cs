@@ -64,4 +64,12 @@ public class RoomController : ControllerBase
         bool ok = await _rooms.DeleteAsync(id, ct);
         return ok ? NoContent() : NotFound();
     }
+    [HttpGet]
+    public async Task<ActionResult<List<RoomResponse>>> GetRooms(
+        [FromQuery] RoomQuery query,
+        CancellationToken ct)
+    {
+        var rooms = await _rooms.QueryAsync(query, ct);
+        return Ok(rooms);
+    }
 }

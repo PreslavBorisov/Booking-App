@@ -6,5 +6,9 @@ public record RoomResponse(
     string? Description,
     decimal PricePerNight,
     int Capacity,
-    bool IsActive
+    bool IsActive,
+    string? ImageUrl,
+    string? Location,
+    string? Address,
+    List<string> Amenities
 );

@@ -4,5 +4,9 @@ public record CreateRoomRequest(
     string Name,
     string? Description,
     decimal PricePerNight,
-    int Capacity
+    int Capacity,
+    string? ImageUrl,
+    string? Location,
+    string? Address,
+    List<String> Amenities
 );

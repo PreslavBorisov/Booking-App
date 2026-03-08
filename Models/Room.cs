@@ -13,5 +13,13 @@ public class Room
 
     public bool IsActive { get; set; } = true;
 
+    public string? ImageUrl { get; set;}
+
+    public string? Location { get; set;}
+
+    public string? Address { get; set;}
+
+    public List<String> Amenities { get; set;} = new();
+
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

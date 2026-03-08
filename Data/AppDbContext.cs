@@ -28,6 +28,10 @@ public class AppDbContext : DbContext
             e.Property(x => x.Name).HasMaxLength(120).IsRequired();
             e.Property(x => x.PricePerNight).HasPrecision(10, 2);
             e.Property(x => x.Capacity).IsRequired();
+            e.Property(x => x.ImageUrl).HasMaxLength(1000);
+            e.Property(x => x.Location).HasMaxLength(200);
+            e.Property(x => x.Address).HasMaxLength(300);
+            e.Property(x => x.Amenities).HasColumnType("text[]");
             e.HasIndex(x => x.Name);
         });
 

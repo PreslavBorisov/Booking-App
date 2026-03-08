@@ -32,17 +32,31 @@ public class RoomService : IRoomService
     {
         Validate(req.Name, req.PricePerNight, req.Capacity);
 
-        var room = new Room
+        Room room = new Room
         {
             Name = req.Name.Trim(),
             Description = req.Description?.Trim(),
             PricePerNight = req.PricePerNight,
             Capacity = req.Capacity,
-            IsActive = true
+            IsActive = true,
+            ImageUrl = req.ImageUrl?.Trim(),
+            Location = req.Location?.Trim(),
+            Address = req.Address?.Trim(),
+            Amenities = req.Amenities?
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Select(a => a.Trim())
+            .Distinct()
+            .ToList() ?? new List<string>()
         };
 
         await _rooms.AddAsync(room, ct);
         return ToResponse(room);
+    }
+
+    public async Task<List<RoomResponse>> QueryAsync(RoomQuery query, CancellationToken ct)
+    {
+        var rooms = await _rooms.QueryAsync(query, ct);
+        return rooms.Select(ToResponse).ToList();
     }
 
     public async Task<RoomResponse?> UpdateAsync(int id, UpdateRoomRequest req, CancellationToken ct = default)
@@ -57,6 +71,14 @@ public class RoomService : IRoomService
         room.PricePerNight = req.PricePerNight;
         room.Capacity = req.Capacity;
         room.IsActive = req.IsActive;
+        room.ImageUrl = req.ImageUrl?.Trim();
+        room.Location = req.Location?.Trim();
+        room.Address = req.Address?.Trim();
+        room.Amenities = req.Amenities?
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Select(a => a.Trim())
+            .Distinct()
+            .ToList() ?? new List<string>();
 
         await _rooms.UpdateAsync(room, ct);
         return ToResponse(room);
@@ -82,7 +104,7 @@ public class RoomService : IRoomService
     }
 
     private static RoomResponse ToResponse(Room r) =>
-        new(r.Id, r.Name, r.Description, r.PricePerNight, r.Capacity, r.IsActive);
+        new(r.Id, r.Name, r.Description, r.PricePerNight, r.Capacity, r.IsActive, r.ImageUrl, r.Location, r.Address, r.Amenities);
 
     public async Task<RoomAvailabilityResponse?> CheckAvailabilityAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default)
 {
