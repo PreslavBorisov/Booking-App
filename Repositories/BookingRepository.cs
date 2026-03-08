@@ -28,4 +28,9 @@ public class BookingRepository : IBookingRepository
             .Where(b => b.UserId == userId)
             .OrderByDescending(b => b.Id)
             .ToListAsync(ct);
+    public async Task<bool> IsRoomAvailableAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default)
+    {
+        var hasOverlap = await HasOverlapAsync(roomId, checkIn, checkOut, ct);
+        return !hasOverlap;
+    }
 }

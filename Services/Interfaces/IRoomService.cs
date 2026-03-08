@@ -10,4 +10,6 @@ public interface IRoomService
     Task<RoomResponse> CreateAsync(CreateRoomRequest req, CancellationToken ct = default);
     Task<RoomResponse?> UpdateAsync(int id, UpdateRoomRequest req, CancellationToken ct = default);
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+    Task<RoomAvailabilityResponse?> CheckAvailabilityAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default);
+
 }

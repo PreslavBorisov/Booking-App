@@ -7,4 +7,5 @@ public interface IBookingRepository
     Task<bool> HasOverlapAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default);
     Task<Booking> AddAsync(Booking booking, CancellationToken ct = default);
     Task<List<Booking>> GetForUserAsync(int userId, CancellationToken ct = default);
+    Task<bool> IsRoomAvailableAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default);
 }

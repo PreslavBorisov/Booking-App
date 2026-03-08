@@ -9,40 +9,37 @@ namespace BookingApp.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class BookingsController : ControllerBase
+public class BookingController : ControllerBase
 {
     private readonly IBookingService _bookings;
-    public BookingsController(IBookingService bookings) => _bookings = bookings;
+
+    public BookingController(IBookingService bookings)
+    {
+        _bookings = bookings;
+    }
 
     [HttpGet("me")]
     public async Task<ActionResult<List<BookingResponse>>> MyBookings(CancellationToken ct)
     {
-        var userId = GetUserId();
-        var res = await _bookings.MyBookingsAsync(userId, ct);
+        int userId = GetUserId();
+        List<BookingResponse> res = await _bookings.MyBookingsAsync(userId, ct);
         return Ok(res);
     }
 
     [HttpPost]
     public async Task<ActionResult<BookingResponse>> Create(CreateBookingRequest req, CancellationToken ct)
     {
-        try
-        {
-            var res = await _bookings.CreateAsync(GetUserId(), req, ct);
-            return Ok(res);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { message = ex.Message });
-        }
+        BookingResponse res = await _bookings.CreateAsync(GetUserId(), req, ct);
+        return Ok(res);
     }
 
     private int GetUserId()
     {
-        var sub = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return int.TryParse(sub, out var id) ? id : throw new InvalidOperationException("Invalid token.");
+        string? sub = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(sub, out var id))
+            throw new UnauthorizedAccessException("Invalid token.");
+
+        return id;
     }
 }

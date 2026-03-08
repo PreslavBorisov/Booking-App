@@ -8,7 +8,13 @@ namespace BookingApp.Api.Services;
 public class RoomService : IRoomService
 {
     private readonly IRoomRepository _rooms;
-    public RoomService(IRoomRepository rooms) => _rooms = rooms;
+    private readonly IBookingRepository _bookings;
+
+    public RoomService(IRoomRepository rooms, IBookingRepository bookings)
+    {
+        _rooms = rooms;
+        _bookings = bookings;
+    }
 
     public async Task<List<RoomResponse>> GetAllAsync(bool includeInactive, CancellationToken ct = default)
     {
@@ -77,4 +83,18 @@ public class RoomService : IRoomService
 
     private static RoomResponse ToResponse(Room r) =>
         new(r.Id, r.Name, r.Description, r.PricePerNight, r.Capacity, r.IsActive);
+
+    public async Task<RoomAvailabilityResponse?> CheckAvailabilityAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default)
+{
+    if (checkOut <= checkIn)
+        throw new ArgumentException("CheckOut must be after CheckIn.");
+
+    var room = await _rooms.GetByIdAsync(roomId, ct);
+    if (room is null || !room.IsActive)
+        return null;
+
+    var isAvailable = await _bookings.IsRoomAvailableAsync(roomId, checkIn, checkOut, ct);
+
+    return new RoomAvailabilityResponse(roomId, checkIn, checkOut, isAvailable);
+}
 }
