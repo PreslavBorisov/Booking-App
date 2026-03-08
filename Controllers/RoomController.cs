@@ -19,14 +19,14 @@ public class RoomController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<RoomResponse>>> GetAll([FromQuery] bool includeInactive, CancellationToken ct)
     {
-        var res = await _rooms.GetAllAsync(includeInactive, ct);
+        List<RoomResponse> res = await _rooms.GetAllAsync(includeInactive, ct);
         return Ok(res);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<RoomResponse>> GetById(int id, CancellationToken ct)
     {
-        var room = await _rooms.GetByIdAsync(id, ct);
+        RoomResponse? room = await _rooms.GetByIdAsync(id, ct);
         return room is null ? NotFound() : Ok(room);
     }
 
@@ -37,7 +37,7 @@ public class RoomController : ControllerBase
         [FromQuery] DateOnly checkOut,
         CancellationToken ct)
     {
-        var result = await _rooms.CheckAvailabilityAsync(id, checkIn, checkOut, ct);
+        RoomAvailabilityResponse? result = await _rooms.CheckAvailabilityAsync(id, checkIn, checkOut, ct);
         return result is null ? NotFound() : Ok(result);
     }
 
@@ -45,7 +45,7 @@ public class RoomController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<RoomResponse>> Create(CreateRoomRequest req, CancellationToken ct)
     {
-        var created = await _rooms.CreateAsync(req, ct);
+        RoomResponse created = await _rooms.CreateAsync(req, ct);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
@@ -53,7 +53,7 @@ public class RoomController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<RoomResponse>> Update(int id, UpdateRoomRequest req, CancellationToken ct)
     {
-        var updated = await _rooms.UpdateAsync(id, req, ct);
+        RoomResponse? updated = await _rooms.UpdateAsync(id, req, ct);
         return updated is null ? NotFound() : Ok(updated);
     }
 
@@ -61,7 +61,7 @@ public class RoomController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var ok = await _rooms.DeleteAsync(id, ct);
+        bool ok = await _rooms.DeleteAsync(id, ct);
         return ok ? NoContent() : NotFound();
     }
 }
