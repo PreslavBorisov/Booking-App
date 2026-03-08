@@ -10,4 +10,10 @@ public class RoomQuery
 
     public string? Search { get; set; }
     public string? Amenity {get; set;}
+
+    public string? SortBy { get; set; }
+    public string? SortOrder { get; set; } = "asc";
+
+    public DateOnly? CheckIn { get; set; }
+    public DateOnly? CheckOut { get; set; }
 }

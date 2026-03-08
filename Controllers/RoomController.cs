@@ -2,6 +2,7 @@ using BookingApp.Api.DTOs.Rooms;
 using BookingApp.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using BookingApp.Api.DTOs.Common;
 
 namespace BookingApp.Api.Controllers;
 
@@ -65,11 +66,12 @@ public class RoomController : ControllerBase
         return ok ? NoContent() : NotFound();
     }
     [HttpGet]
-    public async Task<ActionResult<List<RoomResponse>>> GetRooms(
+    [HttpGet]
+    public async Task<ActionResult<PagedResponse<RoomResponse>>> GetRooms(
         [FromQuery] RoomQuery query,
         CancellationToken ct)
     {
         var rooms = await _rooms.QueryAsync(query, ct);
         return Ok(rooms);
     }
-}
+    }

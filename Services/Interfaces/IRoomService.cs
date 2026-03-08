@@ -1,4 +1,5 @@
 using BookingApp.Api.DTOs.Rooms;
+using BookingApp.Api.DTOs.Common;
 
 namespace BookingApp.Api.Services.Interfaces;
 
@@ -6,8 +7,7 @@ public interface IRoomService
 {
     Task<List<RoomResponse>> GetAllAsync(bool includeInactive, CancellationToken ct = default);
     Task<RoomResponse?> GetByIdAsync(int id, CancellationToken ct = default);
-    Task<List<RoomResponse>> QueryAsync(RoomQuery query, CancellationToken ct = default);
-    Task<RoomResponse> CreateAsync(CreateRoomRequest req, CancellationToken ct = default);
+    Task<PagedResponse<RoomResponse>> QueryAsync(RoomQuery query, CancellationToken ct);    Task<RoomResponse> CreateAsync(CreateRoomRequest req, CancellationToken ct = default);
     Task<RoomResponse?> UpdateAsync(int id, UpdateRoomRequest req, CancellationToken ct = default);
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
     Task<RoomAvailabilityResponse?> CheckAvailabilityAsync(int roomId, DateOnly checkIn, DateOnly checkOut, CancellationToken ct = default);

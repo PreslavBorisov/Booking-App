@@ -1,3 +1,4 @@
+using BookingApp.Api.DTOs.Common;
 using BookingApp.Api.DTOs.Rooms;
 using BookingApp.Api.Models;
 using BookingApp.Api.Repositories.Interfaces;
@@ -53,10 +54,22 @@ public class RoomService : IRoomService
         return ToResponse(room);
     }
 
-    public async Task<List<RoomResponse>> QueryAsync(RoomQuery query, CancellationToken ct)
+    public async Task<PagedResponse<RoomResponse>> QueryAsync(RoomQuery query, CancellationToken ct)
     {
-        var rooms = await _rooms.QueryAsync(query, ct);
-        return rooms.Select(ToResponse).ToList();
+        var result = await _rooms.QueryAsync(query, ct);
+
+        var page = query.Page < 1 ? 1 : query.Page;
+        var pageSize = query.PageSize < 1 ? 10 : query.PageSize;
+        var totalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize);
+
+        return new PagedResponse<RoomResponse>
+        {
+            Items = result.Items.Select(ToResponse).ToList(),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = result.TotalCount,
+            TotalPages = totalPages
+        };
     }
 
     public async Task<RoomResponse?> UpdateAsync(int id, UpdateRoomRequest req, CancellationToken ct = default)
