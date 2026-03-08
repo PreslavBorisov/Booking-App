@@ -1,12 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BookingApp.Api.DTOs.Rooms;
+
 public record UpdateRoomRequest(
-    string Name,
-    string? Description,
-    decimal PricePerNight,
-    int Capacity,
+    [property: Required, MaxLength(120)] string Name,
+    [property: MaxLength(2000)] string? Description,
+    [property: Range(0.01, 1000000)] decimal PricePerNight,
+    [property: Range(1, 100)] int Capacity,
     bool IsActive,
-    string? ImageUrl,
-    string? Location,
-    string? Address,
-    List<string> Amenities
+    [property: MaxLength(1000)] string? ImageUrl,
+    [property: MaxLength(200)] string? Location,
+    [property: MaxLength(300)] string? Address,
+    List<string>? Amenities
 );
