@@ -54,7 +54,7 @@ public class BookingController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("{id:int}/confirm")]
+    [HttpPatch("{id:int}/confirm")]
     public async Task<IActionResult> Confirm(int id, CancellationToken ct)
     {
         await _bookings.ConfirmAsync(id, ct);

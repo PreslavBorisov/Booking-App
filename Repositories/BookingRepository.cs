@@ -25,7 +25,9 @@ public class BookingRepository : IBookingRepository
     }
 
     public Task<List<Booking>> GetForUserAsync(int userId, CancellationToken ct = default)
-        => _db.Bookings.AsNoTracking()
+        => _db.Bookings
+            .AsNoTracking()
+            .Include(b => b.Room)
             .Where(b => b.UserId == userId)
             .OrderByDescending(b => b.Id)
             .ToListAsync(ct);
@@ -57,10 +59,11 @@ public class BookingRepository : IBookingRepository
         IQueryable<Booking> query = _db.Bookings
         .AsNoTracking()
         .Include(b => b.User)
+        .Include(b => b.Room)
         .OrderByDescending(b => b.Id)
         .AsQueryable();
 
-        if(!string.IsNullOrWhiteSpace(status)&& Enum.TryParse<BookingStatus>(status, true, out var parsedStatus))
+        if(!string.IsNullOrWhiteSpace(status) && Enum.TryParse<BookingStatus>(status, true, out var parsedStatus))
         {
             query = query.Where(b => b.Status == parsedStatus);
         }

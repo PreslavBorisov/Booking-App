@@ -38,13 +38,13 @@ public class BookingService : IBookingService
 
         await _bookings.AddAsync(booking, ct);
 
-        return new BookingResponse(booking.Id, booking.RoomId, booking.UserId, booking.CheckIn, booking.CheckOut, booking.Status.ToString());
+        return new BookingResponse(booking.Id, booking.RoomId,booking.Room.Name, booking.UserId, booking.CheckIn, booking.CheckOut, booking.Status.ToString(), room.ImageUrl);
     }
 
     public async Task<List<BookingResponse>> MyBookingsAsync(int userId, CancellationToken ct = default)
     {
         var list = await _bookings.GetForUserAsync(userId, ct);
-        return list.Select(b => new BookingResponse(b.Id, b.RoomId, b.UserId, b.CheckIn, b.CheckOut, b.Status.ToString())).ToList();
+        return list.Select(b => new BookingResponse(b.Id, b.RoomId,b.Room.Name, b.UserId, b.CheckIn, b.CheckOut, b.Status.ToString(), b.Room?.ImageUrl)).ToList();
     }
 
     public async Task CancleAsync(int bookingId, int userId, bool isAdmin, CancellationToken ct = default)
@@ -93,11 +93,13 @@ public class BookingService : IBookingService
         return list.Select(b => new AdminBookingResponse(
             b.Id,
             b.RoomId,
+            b.Room.Name,
             b.UserId,
             b.User.Email,
             b.CheckIn,
             b.CheckOut,
-            b.Status.ToString()
+            b.Status.ToString(),
+            b.Room?.ImageUrl
         )).ToList();
     }
 }
