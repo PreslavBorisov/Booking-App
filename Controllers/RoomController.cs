@@ -17,13 +17,6 @@ public class RoomController : ControllerBase
         _rooms = rooms;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<RoomResponse>>> GetAll([FromQuery] bool includeInactive, CancellationToken ct)
-    {
-        List<RoomResponse> res = await _rooms.GetAllAsync(includeInactive, ct);
-        return Ok(res);
-    }
-
     [HttpGet("{id:int}")]
     public async Task<ActionResult<RoomResponse>> GetById(int id, CancellationToken ct)
     {
