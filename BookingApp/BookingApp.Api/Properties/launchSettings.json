@@ -1,0 +1,8 @@
+﻿{
+  "profiles": {
+    "bookings": {
+      "commandName": "Project",
+      "launchBrowser": false
+    }
+  }
+}
