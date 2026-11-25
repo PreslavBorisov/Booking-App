@@ -1,0 +1,45 @@
+﻿@identity = http://localhost:5023
+@rooms = http://localhost:5022
+@bookings = http://localhost:5021
+@email = demo-admin@example.test
+@password = your-local-admin-password
+@roomId = 1
+@token = paste-access-token-here
+
+### Sign in and copy accessToken into token above
+POST {{identity}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Create a demo room as admin and copy id into roomId above
+POST {{rooms}}/api/room
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Demo room",
+  "pricePerNight": 75,
+  "capacity": 2
+}
+
+### Fetch the room
+GET {{rooms}}/api/room/{{roomId}}
+
+### Create a reservation, then repeat to check overlap handling
+POST {{bookings}}/api/booking
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "roomId": {{roomId}},
+  "checkIn": "2027-03-01",
+  "checkOut": "2027-03-03"
+}
+
+### Check reservation history
+GET {{bookings}}/api/booking/me
+Authorization: Bearer {{token}}
